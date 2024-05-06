@@ -8,13 +8,18 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { ReactNode } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { FormValues, schema } from "../Hooks/LoginFormSubmit";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { CircularProgress } from "@mui/material";
 
 interface LoginFormProps {
-    onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+    onSubmit: SubmitHandler<FormValues>;
     additionalElement: ReactNode | undefined;
 }
 
 export default function LoginForm({ onSubmit, additionalElement }: LoginFormProps) {
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({ resolver: yupResolver<FormValues>(schema) });
     return (
         <Box
             sx={{
@@ -30,8 +35,9 @@ export default function LoginForm({ onSubmit, additionalElement }: LoginFormProp
             <Typography component="h1" variant="h5">
                 Sign in
             </Typography>
-            <Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
                 <TextField
+                    {...register('email')}
                     margin="normal"
                     required
                     fullWidth
@@ -40,8 +46,11 @@ export default function LoginForm({ onSubmit, additionalElement }: LoginFormProp
                     name="email"
                     autoComplete="email"
                     autoFocus
+                    error={Boolean(errors.email)}
+                    helperText={errors.email?.message}
                 />
                 <TextField
+                    {...register('password')}
                     margin="normal"
                     required
                     fullWidth
@@ -50,14 +59,17 @@ export default function LoginForm({ onSubmit, additionalElement }: LoginFormProp
                     type="password"
                     id="password"
                     autoComplete="current-password"
+                    error={Boolean(errors.password)}
+                    helperText={errors.password?.message}
                 />
                 <Button
                     type="submit"
                     fullWidth
                     variant="contained"
                     sx={{ mt: 3, mb: 2 }}
+                    disabled={isSubmitting}
                 >
-                    Sign In
+                    {isSubmitting ? <CircularProgress size={24} /> : 'Sign In'}
                 </Button>
                 {additionalElement}
                 <Grid container>

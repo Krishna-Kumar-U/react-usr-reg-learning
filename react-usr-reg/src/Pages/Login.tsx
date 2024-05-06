@@ -6,24 +6,16 @@ import LoginForm from '../Components/LoginForm';
 import { loginFormSubmit } from '../Hooks/LoginFormSubmit';
 
 export default function Login() {
-  const { alert, alertContent, inProgress, handleSubmit } = loginFormSubmit();
+  const { handleSubmit, serverErrors } = loginFormSubmit();
 
   let content: ReactNode;
 
-  if (alert) {
+  if (serverErrors) {
     content = <Grid container >
       <Grid item xs={12}>
         <Alert variant="filled" severity="error">
-          {alertContent}
+          {serverErrors.message}
         </Alert>
-      </Grid>
-    </Grid>
-  }
-
-  if (inProgress) {
-    content = <Grid container >
-      <Grid item xs={12}>
-        <CircularProgress />
       </Grid>
     </Grid>
   }

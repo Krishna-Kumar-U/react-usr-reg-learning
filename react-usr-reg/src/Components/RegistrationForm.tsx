@@ -6,14 +6,19 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { ReactNode } from "react";
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { FormValues, schema } from '../Hooks/RegisterFormSubmit';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { CircularProgress } from "@mui/material";
 
 interface RegistrationFormProps {
-    onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-    additionalElement: ReactNode | undefined;
+    onSubmit: SubmitHandler<FormValues>;
+    additionalContent?: React.ReactNode | undefined;
 }
 
-export default function RegisterForm({ onSubmit, additionalElement }: RegistrationFormProps) {
+export default function RegisterForm({ onSubmit, additionalContent }: RegistrationFormProps) {
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({ resolver: yupResolver<FormValues>(schema) });
+
     return (
         <Box
             sx={{
@@ -29,31 +34,38 @@ export default function RegisterForm({ onSubmit, additionalElement }: Registrati
             <Typography component="h1" variant="h5">
                 Sign up
             </Typography>
-            <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 3 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextField
+                            {...register('username')}
                             autoComplete="given-name"
-                            name="userName"
+                            name="username"
                             required
                             fullWidth
-                            id="userName"
+                            id="username"
                             label="Preferred User Name"
                             autoFocus
+                            error={Boolean(errors.username)}
+                            helperText={errors.username?.message}
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
+                            {...register('email')}
                             required
                             fullWidth
                             id="email"
                             label="Email Address"
                             name="email"
                             autoComplete="email"
+                            error={Boolean(errors.email)}
+                            helperText={errors.email?.message}
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
+                            {...register('password')}
                             required
                             fullWidth
                             name="password"
@@ -61,6 +73,8 @@ export default function RegisterForm({ onSubmit, additionalElement }: Registrati
                             type="password"
                             id="password"
                             autoComplete="new-password"
+                            error={Boolean(errors.password)}
+                            helperText={errors.password?.message}
                         />
                     </Grid>
                 </Grid>
@@ -69,10 +83,11 @@ export default function RegisterForm({ onSubmit, additionalElement }: Registrati
                     fullWidth
                     variant="contained"
                     sx={{ mt: 3, mb: 2 }}
+                    disabled={isSubmitting}
                 >
-                    Sign Up
+                    {isSubmitting ? <CircularProgress size={24} /> : 'Sign Up'}
                 </Button>
-                {additionalElement}
+                {additionalContent}
                 <Grid container justifyContent="flex-end">
                     <Grid item>
                         <Link to="/login" >

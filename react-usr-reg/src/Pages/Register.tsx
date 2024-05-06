@@ -1,33 +1,22 @@
-import { type ReactNode } from 'react';
-import Grid from '@mui/material/Grid';
-import { Alert, CircularProgress } from '@mui/material';
+import { ReactNode } from 'react';
 import RegisterForm from '../Components/RegistrationForm';
 import { registerFormSubmit } from '../Hooks/RegisterFormSubmit';
+import { Alert, Grid } from '@mui/material';
 
 export default function Register() {
-    const { alert, alertContent, inProgress, handleSubmit } = registerFormSubmit();
+    const {handleSubmit, serverErrors} = registerFormSubmit();
+    let content: ReactNode;
 
-    let content : ReactNode;
-
-    if(alert){
-        content = <Grid container >
-            <Grid item xs={12}>
-                <Alert variant="filled" severity="error">
-                    {alertContent}
-                </Alert>
-            </Grid>
-        </Grid>
-    }
-
-    if(inProgress){
-        content = <Grid container >
-            <Grid item xs={12}>
-                <CircularProgress />
-            </Grid>
-        </Grid> 
-    }
-
+  if (serverErrors) {
+    content = <Grid container >
+      <Grid item xs={12}>
+        <Alert variant="filled" severity="error">
+          {serverErrors.message}
+        </Alert>
+      </Grid>
+    </Grid>
+  }
     return (
-        <RegisterForm onSubmit={handleSubmit} additionalElement={content} />
+        <RegisterForm onSubmit={handleSubmit} additionalContent={content} />
     );
 }

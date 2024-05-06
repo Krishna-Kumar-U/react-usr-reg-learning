@@ -28,7 +28,14 @@ export async function post(url: string, data: any, token: string | null = null) 
         body: JSON.stringify(data)
     });
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+        return response.json().then(data => { 
+            const errors = data.errors;
+            let errorMessage = '';
+            for (const field in errors) {
+                errorMessage += `${field}: ${errors[field]}\n`;
+            }
+            throw new Error(errorMessage) 
+        })
     }
     return response.json();
 }
